@@ -1,0 +1,11 @@
+universe = vanilla
+Executable = NOMINAL_RPD_Centering_PlotterForEric_$(RunNumberName)_.sh
+getenv = True
+Should_Transfer_Files = YES
+Requirements = TARGET.FileSystemDomain == "privnet"
+Error = /home/ebadams/CMSSW_10_3_2/src/RawtoDigi/Errors/condor_pythonstep1_$(Cluster)_$(Process).stderr
+Log = /home/ebadams/CMSSW_10_3_2/src/RawtoDigi/Log/condor_ROOT_MACRO_TEST_$(Cluster)_$(Process).log
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+notification = never
+Queue RunNumberName in (326776, 326822, 326883, 326943, 327078, 327211, 327327, 327464, 327524, 327560)
