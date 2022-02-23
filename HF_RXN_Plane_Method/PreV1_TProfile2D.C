@@ -409,8 +409,8 @@ void PreV1_TProfile2D(int runnumber, int EtaBins ,int PtBins, int numSystematics
 			BinContentOeta = V1EtaOdd[q-1]->GetBinContent(e);
 			cout << "BinContentOeta "<< BinContentOeta << endl;
 			cout << "BinContentEeta "<< BinContentEeta << endl;
-			V1Odd[q-1]->Fill(EtaRanges[e],(0.85*BinContentOeta + BinContentEeta)/(2*BinContent)); //must be a bug somewhere changing to addition fixes the slope and the results are good, im guessinf there is some hidden (-) somewhere... oops
-			V1_Odd_Histo[q-1]->Fill(EtaRanges[e],(0.85*BinContentOeta + BinContentEeta)/(2*BinContent));
+			V1Odd[q-1]->Fill(EtaRanges[e],(BinContentEeta - BinContentOeta)/(2*BinContent)); //must be a bug somewhere changing to addition fixes the slope and the results are good, im guessinf there is some hidden (-) somewhere... oops 0.85*BinContentOeta + BinContentEeta
+			V1_Odd_Histo[q-1]->Fill(EtaRanges[e],(BinContentEeta - BinContentOeta)/(2*BinContent));
 
 		}
 		for (int pt = 0; pt < PtBins; pt++){

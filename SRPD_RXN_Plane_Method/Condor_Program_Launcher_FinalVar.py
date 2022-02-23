@@ -15,7 +15,7 @@ nameofshell = sys.argv[4]
 
 for RunNumber in range(len(content_array)): #generates the number of .sh necessary for all the given root files
 	nameofshellscript = nameofshell + "_" + nameofprogram + "_" + str(content_array[RunNumber]) + "_" + ".sh"
-	pythonfileholder = ('root -l -b n ' + '"/home/ebadams/Final_Thesis_Code/SRPD_RXN_Plane_Method/' + str(nameofprogram) + ".C+(" + str(content_array[RunNumber]) + ", 7, 16, " + str(nameofsystematics) + ", " + str(nameofvertex) + ', 1)"')
+	pythonfileholder = ('root -l -b n ' + '"/home/ebadams/Final_Thesis_Code/SRPD_RXN_Plane_Method/' + str(nameofprogram) + ".C+(" + str(content_array[RunNumber]) + ", 7, 16, " + str(nameofsystematics) + ", " + str(nameofvertex) + ', 0)"')
 	file_object = open(nameofshellscript, "w")
 	file_object.writelines([
 		"#!/bin/bash", "\n",

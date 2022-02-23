@@ -333,7 +333,7 @@ void EPPlotting(int runnumber, string Systematics){
   newTree->Branch("Pt_storage_vector",  "std::vector<double>", &Pt_storage_vector);
   ////////////////////
 
-  TFile *f = new TFile(Form("/data2/users/ebadams/Eric_RPD_RXN_Data_Sets/%d/Sys_%s_RN_%d_RXN_Plane_VECTORS_Tree_HF_JAIME.root", runnumber, Systematics.c_str(), runnumber));
+  TFile *f = new TFile(Form("/data2/users/ebadams/Eric_HF_RXN_Data_Sets/%d/Sys_%s_RN_%d_RXN_Plane_VECTORS_Tree_HF_JAIME.root", runnumber, Systematics.c_str(), runnumber));
     //std::cout<<f<<std::endl;
   
     TTree *t = (TTree*)f->Get("RXN_Plane");
@@ -367,7 +367,7 @@ void EPPlotting(int runnumber, string Systematics){
     if ( runnumber == 1){
       G = new TFile(Form("/data2/users/ebadams/Erics_Data_Sets/MonteCarlo_NO_FLOW/AMPT_Official/AMPT_Official_2018_PbPb.root"));
     }
-    if (Systematics == "Normal"){
+    else if (Systematics == "Normal"){
       G = new TFile(Form("/data2/users/ebadams/Erics_Data_Sets/Complete_%d/Full_Erics_rereco_PbPb2018_AOD_MinBias2_%d_RPDZDC.root",runnumber,runnumber));//(Form("%s",FileandPath.c_str()));
     }
     if (Systematics == "LOOSE"){
@@ -683,6 +683,9 @@ void EPPlotting(int runnumber, string Systematics){
 void FillAngularCorrections(int runnumber, string Systematics){ //this is a cursed solution to legacy code
 
   switch (runnumber) {
+    case 1:
+
+      #include "/data2/users/ebadams/Eric_HF_RXN_Data_Sets/1/Sys_Normal_RN_1_CosAndSinValues.txt"
 
 
 

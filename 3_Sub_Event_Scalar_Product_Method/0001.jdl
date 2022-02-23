@@ -8,4 +8,4 @@ Log = /home/ebadams/CMSSW_10_3_2/src/RawtoDigi/Log/condor_ROOT_MACRO_TEST_$(Clus
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 notification = never
-Queue RunNumberName in (326776, 326822, 326883, 326943, 327078, 327211, 327327, 327464, 327524, 327560)
+Queue RunNumberName in (326776, 326822)

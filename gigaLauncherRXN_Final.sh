@@ -9,10 +9,10 @@ ListHF=("PreV1_TProfile2D" "PreV1_TProfile2D1060" "PreV1_TProfile2D540" "PreV1_T
 ListRPD=("RPD_PreV1_TProfile2D" "RPD_PreV1_TProfile2D1060" "RPD_PreV1_TProfile2D540" "RPD_PreV1_TProfile2D580")
 
 
-for i in  0 # 1 2 3
+for i in  0 # 1 3
 do 
 
-    for j in 0 # 0 1 2
+    for j in 0 1 2
 
     do
 

@@ -182,10 +182,10 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 	for ( int i = 0; i < 10; i++){
 
 		V1Even->cd();
-		V1_Even_Histo[i] = new TH1D(Form("%s_V1_Even_%s", RPD_or_HF.c_str(),centralitystring[i].c_str()),Form("%s_V1_Even_10-60;  Pt; V1 Magnitude [A.U.]", RPD_or_HF.c_str(), centralitystring[i].c_str()), PtBins, Ptmin, Ptmax);
+		V1_Even_Histo[i] = new TH1D(Form("%s_V1_Even_%s", RPD_or_HF.c_str(),centralitystring[i].c_str()),Form("%s_V1_Even_10-60_%s;  Pt; V1 Magnitude [A.U.]", RPD_or_HF.c_str(), centralitystring[i].c_str()), PtBins, Ptmin, Ptmax);
 	
 		V1Odd->cd();
-		V1_Odd_Histo[i] = new TH1D(Form("%s_V1_Odd_%s", RPD_or_HF.c_str(), centralitystring[i].c_str()), Form("%s_V1_Odd_10-60; Eta; V1 Magnitude [A.U.]", RPD_or_HF.c_str(), centralitystring[i].c_str()), EtaBins, etamin, etamax);
+		V1_Odd_Histo[i] = new TH1D(Form("%s_V1_Odd_%s", RPD_or_HF.c_str(), centralitystring[i].c_str()), Form("%s_V1_Odd_10-60_%s; Eta; V1 Magnitude [A.U.]", RPD_or_HF.c_str(), centralitystring[i].c_str()), EtaBins, etamin, etamax);
 	}
 
 	////////////Global_Variables////////////////////////////////////////////////////////
@@ -219,10 +219,6 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 
 	double vtx_value = 0;
 
-	double RPD_Weights[2][10][16] = {0};
-
-	int Eta_binfilled_Check[EtaBins];
-	int Pt_binfilled_Check[PtBins];
 
 
 	std::vector<double>* phi = 0;
@@ -252,8 +248,8 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
   	if (runnumber == 2){
   		//Private Monte Carlo
   	}
-  	else {
-  		if (Systematics == "Normal"){
+  	if (runnumber != 1 and runnumber != 2) {
+  	  	if (Systematics == "Normal"){
 			f = new TFile(Form("/data2/users/ebadams/Erics_Data_Sets/Complete_%d/Full_Erics_rereco_PbPb2018_AOD_MinBias2_%d_RPDZDC.root",runnumber,runnumber));//(Form("%s",FileandPath.c_str()));
 		}
 		if (Systematics == "LOOSE"){
@@ -281,7 +277,6 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 	ZDCDigiTree->SetBranchStatus("phi",1); //turnns on branch
 	ZDCDigiTree->SetBranchStatus("eta",1); //turnns on branch
 	ZDCDigiTree->SetBranchStatus("Pt",1); //turnns on branch
-	ZDCDigiTree->SetBranchStatus("vtx",1); //turnns on branch
 
 	ZDCDigiTree->SetBranchStatus("zside",1); //turnns on branch
 	ZDCDigiTree->SetBranchStatus("section",1); //turnns on branch
@@ -315,7 +310,6 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 	TLeaf* runLeaf;    
 	TLeaf* AccpTrackLeaf;
 	TLeaf* CentralityLeaf;
-	TLeaf* vtxLeaf;
 
 	TLeaf* NHFPos;
 	TLeaf* NHFNeg;
@@ -326,11 +320,14 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 	eventLeaf = (TLeaf*)ZDCDigiTree->GetLeaf("event");
 	runLeaf = (TLeaf*)ZDCDigiTree->GetLeaf("run");
 	AccpTrackLeaf = (TLeaf*)ZDCDigiTree->GetLeaf("nAcceptedTracks");
-	vtxLeaf = (TLeaf*)ZDCDigiTree->GetLeaf("vtx");
 	
 	ZDCDigiTree->SetBranchAddress("phi", &phi);
+	//ZDCDigiTree->SetBranchAddress("phiError", &phiError);
 	ZDCDigiTree->SetBranchAddress("eta", &eta);
+	//ZDCDigiTree->SetBranchAddress("etaError", &etaError);
 	ZDCDigiTree->SetBranchAddress("Pt", &Pt);
+	//ZDCDigiTree->SetBranchAddress("ptError", &ptError);
+	//ZDCDigiTree->SetBranchAddress("chi2", &chi2);
 
 	NHFPos = (TLeaf*)ZDCDigiTree->GetLeaf("nHF_pos");
 	NHFNeg = (TLeaf*)ZDCDigiTree->GetLeaf("nHF_neg");
@@ -376,7 +373,13 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 
 	///////////////////////////////////////////////////////////////////////////
 
-	//use hf phi and cos sin like jaimes
+//use hf phi and cos sin like jaimes
+
+
+	int Eta_binfilled_Check[EtaBins];
+	int Pt_binfilled_Check[PtBins];
+
+	double RPD_Weights[2][10][16] = {0};
 
 
 	Returns_SRPD_Calibrations(RunNumber,RPD_Weights);
@@ -384,45 +387,27 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 
 	bool TF = true;
 	bool Recentered = false;
+	//double TRPD_Cuts[2][16] = {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
 
 	Restart_Recentered:
 
 	int C = 0;
 	////////////////////////////////////////////////////////////////////////////////
-	for (int i = 0; i < N_entries; i++){ //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<EVENT LOOP
-	
-	    	ZDCDigiTree->GetEntry(i);
-	
-	    	if ( !(i%10000) ) std::cout<<"Events # " << i <<std::endl;
-	
-	    	Accep_N_Tracks = AccpTrackLeaf->GetValue();
-	
-	    	if (Accep_N_Tracks < 10){
-	    		continue; //If you have less than 10 tracks how can you possibly measure flow consitently...
-	    	}
-	
-	    	numHFTowersPos = NHFPos->GetValue();
-		numHFTowersNeg = NHFNeg->GetValue();
-	
+  for (int i = 0; i < N_entries; i++){ //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<EVENT LOOP
+
+    	ZDCDigiTree->GetEntry(i);
+
+    	if ( !(i%10000) ) std::cout<<"Events # " << i <<std::endl;
+
+    	Accep_N_Tracks = AccpTrackLeaf->GetValue();
+
+    	numHFTowersPos = NHFPos->GetValue();
+			numHFTowersNeg = NHFNeg->GetValue();
+
 		if (numHFTowersNeg < 1 or numHFTowersPos < 1){ //(prevents divding by zero)
 			continue;
 		}
-	
-		vtx_value = vtxLeaf->GetValue();
-	
-		//vertex systematics
-	
-		if (numVertex == 1){
-			if (abs(vtx_value) > 15 and abs(vtx_value) < 3 ){
-				continue;
-			}
-		}
-		else if (numVertex == 2){ 
-			if (abs(vtx_value) > 3){
-				continue;
-			}
-		}
-	
+
 	    	CentralityValue = CentralityLeaf->GetValue();
 	      centBin = getHiBinFromhiHF(CentralityValue);
 	      //C = Centrality_Array_Chooser(centBin);
@@ -448,34 +433,35 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 	/*        if (C == 9){
 	        	continue;
 	        }*/
-	
-	    QPOSx_Numerator  = 0;
+
+    QPOSx_Numerator  = 0;
 		QPOSy_Numerator  = 0;
 		QPOS_Denominator = 0;
-	
+
 		QNEGx_Numerator  = 0;
 		QNEGy_Numerator  = 0;
 		QNEG_Denominator = 0;
-	
+
 		QNEGx = 0;
 		QNEGy = 0;
 		QPOSx = 0;
 		QPOSy = 0;
-		
-		//////////////////////basic cuts///
-		if (TF){
-		
-	      	RPD_Cuts_Generator(RunNumber, RPD_Cuts);
-	      	TF = false;
-	    	}
-		    //////////////////////////////////
-		    //HF
-		
-		if (RPD_or_HF == "HF"){
 	
+		//////////////////////basic cuts///
+	    if (TF){
+	    	
+
+      		RPD_Cuts_Generator(RunNumber, RPD_Cuts);
+      		TF = false;
+    	}
+	    //////////////////////////////////
+	    //HF
+	
+		if (RPD_or_HF == "HF"){
+
 			double EnergyHF = 0;
 			double hfPhi = 0;
-	
+
 			for (int numNegHF = 0; numNegHF < numHFTowersNeg; numNegHF++){
 			
 				EnergyHF = (HFNeg_Energy->at(numNegHF));
@@ -496,105 +482,105 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 				QPOS_Denominator += (EnergyHF); 
 			}
 		}
-	
+
 		//RPD
 		if (RPD_or_HF == "RPD"){
 			    ////
-	   			for (int n = 0; n < NChannels; n++) { //iterates through all channels of both ZDC + and -
-	  
-	   			  int side = (int)((zsideLeaf->GetValue(n) + 1) / 2.0);
-	   			  int type = (int)(sectionLeaf->GetValue(n)) - 1;
-	   			  int channel = (int)(channelLeaf->GetValue(n)) - 1;
-	   			
-	   			  double TS_Zero  = (fCleaf[0]->GetValue(n) <= 0) ? 0 : (fCleaf[0]->GetValue(n));
-	   			  double TS_One   = (fCleaf[1]->GetValue(n) <= 0) ? 0 : (fCleaf[1]->GetValue(n));
-	   			  double TS_Two   = (fCleaf[2]->GetValue(n) <= 0) ? 0 : (fCleaf[2]->GetValue(n));
-	   			  double TS_Three = (fCleaf[3]->GetValue(n) <= 0) ? 0 : (fCleaf[3]->GetValue(n));
-	   			  double TS_Four  = (fCleaf[4]->GetValue(n) <= 0) ? 0 : (fCleaf[4]->GetValue(n));
-	   			  double TS_Five  = (fCleaf[5]->GetValue(n) <= 0) ? 0 : (fCleaf[5]->GetValue(n));
-	   			  double TS_Six   = (fCleaf[6]->GetValue(n) <= 0) ? 0 : (fCleaf[6]->GetValue(n));
-	   			  double TS_Seven = (fCleaf[7]->GetValue(n) <= 0) ? 0 : (fCleaf[7]->GetValue(n));
-	   			  double TS_Eight = (fCleaf[8]->GetValue(n) <= 0) ? 0 : (fCleaf[8]->GetValue(n));
-	   			  double TS_Nine  = (fCleaf[9]->GetValue(n) <= 0) ? 0 : (fCleaf[9]->GetValue(n));
-	
-	   			
-	   			
-	   			  double TS_ARRAY[NTS] = { TS_Zero, TS_One, TS_Two, TS_Three, TS_Four, TS_Five, TS_Six, TS_Seven, TS_Eight, TS_Nine};
-	   			
-	   			  if (type == RPD){ // make sure to set cuttoff to 40 fC for RPD
-	   			    for (int TS = 0; TS < NTS; TS++){
-	   			      RawDataRPD[side][channel][TS] = TS_ARRAY[TS];
-	   			    }
-	   			  }
-	   			}
-	   			double OC_RPD_Data[2][16] = {0};
-	  
-	   			Modern_RPD_Data_Organizer_and_Cleaner(RawDataRPD, RPD_Cuts, OC_RPD_Data, runnumber); // cleans and organizes RPD data into a sensible order start top left , read left to right, finish bottom right Quartz blocks
-	
-	   			/*if (OC_RPD_Data[0][0] == -343 or OC_RPD_Data[1][0] == -343){
-	   				if (i != (N_entries - 1) ){
-	   			  		continue; //continues event loop
-	   			  	}
-	   			}
-	*/
-	   			double OCC_RPD_Data[2][16] = {0};
-	  
-	   			for (int s = 0; s < 2; s ++){
-	   			  if (OC_RPD_Data[s][0] == -343){ //NOTE this can produce arrays that are defualt filled with zeros need logic to not fill if entire array is zeros
-	   			    continue;//continues event loop
-	   			    for ( int c = 0; c < 16; c++){
-	   			        OCC_RPD_Data[s][c] = (OC_RPD_Data[s][c]);
-	   			    }
-	   			  }
-	   			  else{
-	   			    for ( int c = 0; c < 16; c++){
-	   			      //if (c != 1 or c != 10 or c != 11){
-	   			        OCC_RPD_Data[s][c] = (OC_RPD_Data[s][c] * RPD_Weights[s][C][c]/** RPD_Frac[s][c]*/);
-	  
-	   			      //}
-	   			     // if (c == 1 or c == 10 or c == 11 ){ 
-	   			     //  OCC_RPD_Data[s][c] = (OC_RPD_Data[0][c] * RPD_Weights[0][c]/** RPD_Frac[0][c]*/);
-	
-	   			      //}
-	   			    }
-	   			  }
-	   			}
-	   			////
-	
-	   		for (int c = 0; c < 16; c++){
-	
-	    	  //pos
-	    	  QPOSx_Numerator += (OCC_RPD_Data[1][c] * cos(RPD_Block_In_Phi[c]));
-	    	  QPOSy_Numerator += (OCC_RPD_Data[1][c] * sin(RPD_Block_In_Phi[c]));
-	    	  QPOS_Denominator += OCC_RPD_Data[1][c];
+   				for (int n = 0; n < NChannels; n++) { //iterates through all channels of both ZDC + and -
+  
+   				  int side = (int)((zsideLeaf->GetValue(n) + 1) / 2.0);
+   				  int type = (int)(sectionLeaf->GetValue(n)) - 1;
+   				  int channel = (int)(channelLeaf->GetValue(n)) - 1;
+   				
+   				  double TS_Zero  = (fCleaf[0]->GetValue(n) <= 0) ? 0 : (fCleaf[0]->GetValue(n));
+   				  double TS_One   = (fCleaf[1]->GetValue(n) <= 0) ? 0 : (fCleaf[1]->GetValue(n));
+   				  double TS_Two   = (fCleaf[2]->GetValue(n) <= 0) ? 0 : (fCleaf[2]->GetValue(n));
+   				  double TS_Three = (fCleaf[3]->GetValue(n) <= 0) ? 0 : (fCleaf[3]->GetValue(n));
+   				  double TS_Four  = (fCleaf[4]->GetValue(n) <= 0) ? 0 : (fCleaf[4]->GetValue(n));
+   				  double TS_Five  = (fCleaf[5]->GetValue(n) <= 0) ? 0 : (fCleaf[5]->GetValue(n));
+   				  double TS_Six   = (fCleaf[6]->GetValue(n) <= 0) ? 0 : (fCleaf[6]->GetValue(n));
+   				  double TS_Seven = (fCleaf[7]->GetValue(n) <= 0) ? 0 : (fCleaf[7]->GetValue(n));
+   				  double TS_Eight = (fCleaf[8]->GetValue(n) <= 0) ? 0 : (fCleaf[8]->GetValue(n));
+   				  double TS_Nine  = (fCleaf[9]->GetValue(n) <= 0) ? 0 : (fCleaf[9]->GetValue(n));
+
+   				
+   				
+   				  double TS_ARRAY[NTS] = { TS_Zero, TS_One, TS_Two, TS_Three, TS_Four, TS_Five, TS_Six, TS_Seven, TS_Eight, TS_Nine};
+   				
+   				  if (type == RPD){ // make sure to set cuttoff to 40 fC for RPD
+   				    for (int TS = 0; TS < NTS; TS++){
+   				      RawDataRPD[side][channel][TS] = TS_ARRAY[TS];
+   				    }
+   				  }
+   				}
+   				double OC_RPD_Data[2][16] = {0};
+  
+   				Modern_RPD_Data_Organizer_and_Cleaner(RawDataRPD, RPD_Cuts, OC_RPD_Data, runnumber); // cleans and organizes RPD data into a sensible order start top left , read left to right, finish bottom right Quartz blocks
+
+   				/*if (OC_RPD_Data[0][0] == -343 or OC_RPD_Data[1][0] == -343){
+   					if (i != (N_entries - 1) ){
+   				  		continue; //continues event loop
+   				  	}
+   				}
+*/
+   				double OCC_RPD_Data[2][16] = {0};
+  
+   				for (int s = 0; s < 2; s ++){
+   				  if (OC_RPD_Data[s][0] == -343){ //NOTE this can produce arrays that are defualt filled with zeros need logic to not fill if entire array is zeros
+   				    continue;//continues event loop
+   				    for ( int c = 0; c < 16; c++){
+   				        OCC_RPD_Data[s][c] = (OC_RPD_Data[s][c]);
+   				    }
+   				  }
+   				  else{
+   				    for ( int c = 0; c < 16; c++){
+   				      //if (c != 1 or c != 10 or c != 11){
+   				        OCC_RPD_Data[s][c] = (OC_RPD_Data[s][c] * RPD_Weights[s][C][c]/** RPD_Frac[s][c]*/);
+  
+   				      //}
+   				     // if (c == 1 or c == 10 or c == 11 ){ 
+   				     //  OCC_RPD_Data[s][c] = (OC_RPD_Data[0][c] * RPD_Weights[0][c]/** RPD_Frac[0][c]*/);
+
+   				      //}
+   				    }
+   				  }
+   				}
+   				////
+
+   			for (int c = 0; c < 16; c++){
+
+    		  //pos
+    		  QPOSx_Numerator += (OCC_RPD_Data[1][c] * cos(RPD_Block_In_Phi[c]));
+    		  QPOSy_Numerator += (OCC_RPD_Data[1][c] * sin(RPD_Block_In_Phi[c]));
+    		  QPOS_Denominator += OCC_RPD_Data[1][c];
 		
-	    	  //neg
-	    	  QNEGx_Numerator += ((OCC_RPD_Data[0][c]) * cos(RPD_Block_In_Phi[c]));
-	    	  QNEGy_Numerator += ((OCC_RPD_Data[0][c]) * sin(RPD_Block_In_Phi[c]));
-	    	  QNEG_Denominator += OCC_RPD_Data[0][c];
-	
-	    	}
-	
+    		  //neg
+    		  QNEGx_Numerator += ((OCC_RPD_Data[0][c]) * cos(RPD_Block_In_Phi[c]));
+    		  QNEGy_Numerator += ((OCC_RPD_Data[0][c]) * sin(RPD_Block_In_Phi[c]));
+    		  QNEG_Denominator += OCC_RPD_Data[0][c];
+
+    		}
+
 		}//end if rpd
-	
-			
+
+		
 		if (RPD_or_HF == "RPD"){
 			QNEGx = (/*-1**/QNEGx_Numerator)/QNEG_Denominator;
 			QNEGy = (/*-1**/QNEGy_Numerator)/QNEG_Denominator;
 			QPOSx = QPOSx_Numerator/QPOS_Denominator;
 			QPOSy = QPOSy_Numerator/QPOS_Denominator;
-	
+
 		}
 		if(RPD_or_HF == "HF"){
-	
+
 			QNEGx = (QNEGx_Numerator)/QNEG_Denominator;
 			QNEGy = (QNEGy_Numerator)/QNEG_Denominator;
 			QPOSx = QPOSx_Numerator/QPOS_Denominator;
 			QPOSy = QPOSy_Numerator/QPOS_Denominator;
-	
+
 		}
-	
-	
+
+
 		if(isnan(QNEGx)){
 			continue;
 		}
@@ -607,13 +593,13 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 		if(isnan(QPOSy)){
 			continue;
 		}
-		
+	
 		///////////////////////////////////////////////////////////// creating q vectors and recentering
+	
+	//tprofile 2d fill 4 histo 10 times
+	
+	//https://arxiv.org/pdf/1910.14406.pdf
 		
-		//tprofile 2d fill 4 histo 10 times
-		
-		//https://arxiv.org/pdf/1910.14406.pdf
-			
 		if (Recentered == false){
 		//	cout << "C " << C << endl;
 		//	cout << "QPOSx " << QPOSx << endl;
@@ -622,21 +608,21 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 			TP2D_Pre_QNEGy->Fill( C+0.2, 0.2, QNEGy); 
 			TP2D_Pre_QPOSx->Fill( C+0.2, 0.2, QPOSx);
 			TP2D_Pre_QPOSy->Fill( C+0.2, 0.2, QPOSy);
-	
+
 			/*if (C == 9){
-	
+
 				cout<< "QNEGx " << QNEGx << endl;			
 				cout<< "QNEGy " << QNEGy << endl;
 				cout<< "QPOSx " << QPOSx << endl;
 				cout<< "QPOSy " << QPOSy << endl;
-	
+
 				if (isnan(QNEGx) or isnan(QNEGy) or isnan(QPOSx) or isnan(QPOSy)){
 					cout << "NAN DETECTED!!!!!!!!\n";
 					return;
 				}
-	
+
 			}*/
-	
+
 			
 			if (i == (N_entries - 1) ){
 				cout <<"RECENTERING!!!...."<< endl;
@@ -647,7 +633,7 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 					AVG_QNEGy[k] = TP2D_Pre_QNEGy->GetBinContent(k+1,1.0);
 					AVG_QPOSx[k] = TP2D_Pre_QPOSx->GetBinContent(k+1,1.0);
 					AVG_QPOSy[k] = TP2D_Pre_QPOSy->GetBinContent(k+1,1.0);
-	
+
 					//cout << AVG_QPOSy[k] << endl;
 			
 					Bin_Err_TP2D_QNEGx[k] = TP2D_Pre_QNEGx->GetBinError(k+1,1.0);
@@ -661,29 +647,29 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 					TP2D_Pre_QPOSy->Fill( k+0.2, 1.2, Bin_Err_TP2D_QPOSy[k]);
 					//cout << Bin_Err_TP2D_QPOSy[k] << endl;
 				}
-	/*	
+/*		
 				TP2D_Pre_QNEGx->Draw("text");
 				TP2D_Pre_QNEGy->Draw("text"); 
 				TP2D_Pre_QPOSx->Draw("text");
 				TP2D_Pre_QPOSy->Draw("text");*/
-		
+	
 				goto Restart_Recentered;
 			
 			}
 		
 			continue;
 		}
-		
-		if (Recentered == true){
 	
+		if (Recentered == true){
+
 			//cout << "YES_2\n";
 		
 			QNEGx = (QNEGx - AVG_QNEGx[C])/Bin_Err_TP2D_QNEGx[C];
 			QNEGy = (QNEGy - AVG_QNEGy[C])/Bin_Err_TP2D_QNEGy[C];
 			QPOSx = (QPOSx - AVG_QPOSx[C])/Bin_Err_TP2D_QPOSx[C];
 			QPOSy = (QPOSy - AVG_QPOSy[C])/Bin_Err_TP2D_QPOSy[C];
-	
-	/*		cout << "QNEGx " << QNEGx << endl;
+
+/*			cout << "QNEGx " << QNEGx << endl;
 			cout << "QNEGy " << QNEGy << endl;
 			cout << "QPOSx " << QPOSx << endl;
 			cout << "QPOSy " << QPOSy << endl;*/
@@ -700,18 +686,18 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 					Bin_Err_TP2D_QNEGy[k] = TP2D_Post_QNEGy->GetBinError(k+1,1.0);
 					Bin_Err_TP2D_QPOSx[k] = TP2D_Post_QPOSx->GetBinError(k+1,1.0);
 					Bin_Err_TP2D_QPOSy[k] = TP2D_Post_QPOSy->GetBinError(k+1,1.0);
-	
-	/*				cout << "Bin_Err_TP2D_QNEGx[k] " << Bin_Err_TP2D_QNEGx[k] << endl;
+
+/*					cout << "Bin_Err_TP2D_QNEGx[k] " << Bin_Err_TP2D_QNEGx[k] << endl;
 					cout << "Bin_Err_TP2D_QNEGy[k] " << Bin_Err_TP2D_QNEGy[k] << endl;
 					cout << "Bin_Err_TP2D_QPOSx[k] " << Bin_Err_TP2D_QPOSx[k] << endl;
 					cout << "Bin_Err_TP2D_QPOSy[k] " << Bin_Err_TP2D_QPOSy[k] << endl;*/
-		
+	
 					TP2D_Post_QNEGx->Fill( k+0.2, 1.2, Bin_Err_TP2D_QNEGx[k]);
 					TP2D_Post_QNEGy->Fill( k+0.2, 1.2, Bin_Err_TP2D_QNEGy[k]); 
 					TP2D_Post_QPOSx->Fill( k+0.2, 1.2, Bin_Err_TP2D_QPOSx[k]);
 					TP2D_Post_QPOSy->Fill( k+0.2, 1.2, Bin_Err_TP2D_QPOSy[k]);
 				}
-	/*	
+/*	
 				TP2D_Post_QNEGx->Draw("text");
 				TP2D_Post_QNEGy->Draw("text"); 
 				TP2D_Post_QPOSx->Draw("text");
@@ -724,9 +710,9 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 								//number eta bins will be set by user // 10 bins for cent
 				
 		double Normalization_Addition = (QNEGx*QPOSx + QNEGy*QPOSy);
-	
+
 		//cout << "Normalization_Addition " << Normalization_Addition << endl;
-		
+	
 		for (int N_Tracks = 0; N_Tracks < Accep_N_Tracks; N_Tracks++){
 			///////
 			if (N_Tracks == 0){
@@ -734,27 +720,20 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 				memset(Pt_binfilled_Check, 0, sizeof(Pt_binfilled_Check));
 			}
 			///////
-		
+	
 			double Eta_Value = eta->at(N_Tracks);
 			double Pt_Value = Pt->at(N_Tracks);
 			double Phi_Value = phi->at(N_Tracks);
 
-			if (numEff == 1){
-			    WeightValue = (TrackEffFxn.getCorrection(Pt_Value, Eta_Value, centBin));
-			}
-			else{
-			   	WeightValue = 1;
-			}
-	
-	
-	
-			double Neg_Numerator_Addition = ((cos(Phi_Value)*QNEGx + sin(Phi_Value)*QNEGy)*WeightValue);
-			double Pos_Numerator_Addition = ((cos(Phi_Value)*QPOSx + sin(Phi_Value)*QPOSy)*WeightValue); //i think this neg 1 is in the right place IT MAY NOT BE
+
+
+			double Neg_Numerator_Addition = ((cos(Phi_Value)*QNEGx + sin(Phi_Value)*QNEGy));
+			double Pos_Numerator_Addition = ((cos(Phi_Value)*QPOSx + sin(Phi_Value)*QPOSy)); //i think this neg 1 is in the right place IT MAY NOT BE
 			//cout << "C " << C << endl;
-	/*
+/*
 			cout << "Neg_Numerator_Addition " << Neg_Numerator_Addition <<endl;
 			cout << "Pos_Numerator_Addition " << Pos_Numerator_Addition <<endl;
-	*/	
+	*/
 			///////////////////////////////////////////////////////////////////////////////////////
 		
 			if ( etamin < Eta_Value and Eta_Value < etamax){
@@ -768,17 +747,17 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 						break;
 					}
 				}
-		
+	
 				if (Eta_binfilled_Check[EtaBin] == 0){ //only want to bin once per event
 					Eta_binfilled_Check[EtaBin] = 1;
-		
+	
 					V1_Eta_Pre_Denominator->Fill(Eta_Value, C+ 0.2, Normalization_Addition);
 				}
 				//////////
-		
+	
 				V1_Neg_Eta_Pre_Numerator->Fill(Eta_Value, C+ 0.2, Neg_Numerator_Addition);
 				V1_Pos_Eta_Pre_Numerator->Fill(Eta_Value, C+ 0.2, Pos_Numerator_Addition);
-	
+
 				//cout << "EtaBin " << EtaBin << endl;
 				//cout << "EtaValue " << Eta_Value << endl;
 			}
@@ -793,14 +772,14 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 						break;
 					}
 				}
-		
+	
 				if (Pt_binfilled_Check[PtBin] == 0){ //only want to bin once per event
 					Pt_binfilled_Check[PtBin] = 1;
-		
+	
 					V1_Pt_Pre_Denominator->Fill(Pt_Value, C+ 0.2, Normalization_Addition);
 				}
 				//////////
-		
+	
 				V1_Neg_Pt_Pre_Numerator->Fill(Pt_Value, C+ 0.2, Neg_Numerator_Addition);
 				V1_Pos_Pt_Pre_Numerator->Fill(Pt_Value, C+ 0.2, Pos_Numerator_Addition);
 		
@@ -856,7 +835,7 @@ int Three_Sub_Event_Scalar_Product_Method_V1_Only_1060(int EtaBins, int PtBins, 
 
 			V1_Even_Histo[Cent]->Fill((PtRanges[N_PtBin]+PtRanges[N_PtBin+1])/2, V1_Even);
 		}
-	}//filling plots
+	}
 
 	myFile->Write();
 

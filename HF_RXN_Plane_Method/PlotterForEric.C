@@ -226,6 +226,9 @@ void DummyFunction(int runnumber, string Systematics){
   if ( runnumber == 1){
     f = new TFile(Form("/data2/users/ebadams/Erics_Data_Sets/MonteCarlo_NO_FLOW/AMPT_Official/AMPT_Official_2018_PbPb.root"));
   }
+  else if (runnumber == 2){
+    f = new TFile(Form("/data2/users/ebadams/Erics_Data_Sets/MonteCarlo_NO_FLOW/AMPT_NO_FLOW/Erics_PMC.root"));
+  }
   else {
     if (Systematics == "Normal"){
     f = new TFile(Form("/data2/users/ebadams/Erics_Data_Sets/Complete_%d/Full_Erics_rereco_PbPb2018_AOD_MinBias2_%d_RPDZDC.root",runnumber,runnumber));//(Form("%s",FileandPath.c_str()));

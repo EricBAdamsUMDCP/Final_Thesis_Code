@@ -1,5 +1,5 @@
 universe = vanilla
-Executable = 0001_RPD_PreV1_TProfile2D1060_$(RunNumberName)_.sh
+Executable = 0001_RPD_PreV1_TProfile2D_$(RunNumberName)_.sh
 getenv = True
 Should_Transfer_Files = YES
 Requirements = TARGET.FileSystemDomain == "privnet"

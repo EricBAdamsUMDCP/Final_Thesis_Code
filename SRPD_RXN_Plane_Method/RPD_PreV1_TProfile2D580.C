@@ -444,16 +444,16 @@ void RPD_PreV1_TProfile2D580(int runnumber, int EtaBins ,int PtBins, int numSyst
 		
 		CompareRXN->Draw("COLZ");
 		D->SaveAs(Form("/data2/users/ebadams/Eric_RPD_RXN_Data_Sets/%d/PNG/%s/%s/%d_compare_all_cent__580.png", runnumber, Systematics.c_str(), Vertex.c_str(), runnumber));
-		V1_Even_Histo[q-1]->Draw("HIST P");
+		V1_Even_Histo[q-1]->Draw("HIST E0");
 		V1_Even_Histo[q-1]->SetMarkerStyle(20);
 		V1_Even_Histo[q-1]->SetMarkerSize(3);
-		D->SaveAs(Form("/data2/users/ebadams/Eric_RPD_RXN_Data_Sets/%d/PNG/%s/%s/%d_V1_Even_Histo_%s_580.png", runnumber, Systematics.c_str(), Vertex.c_str(), runnumber, centralitystring[q-1].c_str()));
-		V1_Even_Histo[q-1]->SaveAs(Form("/data2/users/ebadams/Eric_RPD_RXN_Data_Sets/%d/ROOT/%s/%s/%d_V1_Even_Histo_%s_580.root", runnumber, Systematics.c_str(), Vertex.c_str(), runnumber, centralitystring[q-1].c_str()));
-		V1_Odd_Histo[q-1]->Draw("HIST P"); 
+		D->SaveAs(Form("/data2/users/ebadams/Eric_RPD_RXN_Data_Sets/%d/PNG/%s/%s/%d_V1_Even_Histo_5-80_%s.png", runnumber, Systematics.c_str(), Vertex.c_str(), runnumber, centralitystring[q-1].c_str()));
+		V1_Even_Histo[q-1]->SaveAs(Form("/data2/users/ebadams/Eric_RPD_RXN_Data_Sets/%d/ROOT/%s/%s/%d_V1_Even_Histo_5-80_%s.root", runnumber, Systematics.c_str(), Vertex.c_str(), runnumber, centralitystring[q-1].c_str()));
+		V1_Odd_Histo[q-1]->Draw("HIST E0"); 
 		V1_Odd_Histo[q-1]->SetMarkerStyle(20);
 		V1_Odd_Histo[q-1]->SetMarkerSize(3);
-		D->SaveAs(Form("/data2/users/ebadams/Eric_RPD_RXN_Data_Sets/%d/PNG/%s/%s/%d_V1_Odd_Histo_%s_580.png", runnumber, Systematics.c_str(), Vertex.c_str(), runnumber,centralitystring[q-1].c_str()));
-		V1_Odd_Histo[q-1]->SaveAs(Form("/data2/users/ebadams/Eric_RPD_RXN_Data_Sets/%d/ROOT/%s/%s/%d_V1_Odd_Histo_%s_580.root", runnumber, Systematics.c_str(), Vertex.c_str(), runnumber, centralitystring[q-1].c_str()));
+		D->SaveAs(Form("/data2/users/ebadams/Eric_RPD_RXN_Data_Sets/%d/PNG/%s/%s/%d_V1_Odd_Histo_5-80_%s.png", runnumber, Systematics.c_str(), Vertex.c_str(), runnumber,centralitystring[q-1].c_str()));
+		V1_Odd_Histo[q-1]->SaveAs(Form("/data2/users/ebadams/Eric_RPD_RXN_Data_Sets/%d/ROOT/%s/%s/%d_V1_Odd_Histo_5-80_%s.root", runnumber, Systematics.c_str(), Vertex.c_str(), runnumber, centralitystring[q-1].c_str()));
 
 	}
 	myFile->Write();

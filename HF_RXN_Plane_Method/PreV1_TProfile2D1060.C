@@ -440,12 +440,12 @@ void PreV1_TProfile2D1060(int runnumber, int EtaBins ,int PtBins, int numSystema
 
 		CompareRXN->Draw("COLZ");
 		D->SaveAs(Form("/data2/users/ebadams/Eric_HF_RXN_Data_Sets/%d/PNG/%s/%s/%d_compare_all_cent_10-60.png", runnumber, Systematics.c_str(), Vertex.c_str(), runnumber));
-		V1_Even_Histo[q-1]->Draw("HIST E");
+		V1_Even_Histo[q-1]->Draw("HIST E0");
 		V1_Even_Histo[q-1]->SetMarkerStyle(20);
 		V1_Even_Histo[q-1]->SetMarkerSize(3);
 		D->SaveAs(Form("/data2/users/ebadams/Eric_HF_RXN_Data_Sets/%d/PNG/%s/%s/%d_HF_V1_Even_Histo_10-60_%s.png", runnumber, Systematics.c_str(), Vertex.c_str(), runnumber, centralitystring[q-1].c_str()));
 		V1_Even_Histo[q-1]->SaveAs(Form("/data2/users/ebadams/Eric_HF_RXN_Data_Sets/%d/ROOT/%s/%s/%d_HF_V1_Even_Histo_10-60_%s.root", runnumber, Systematics.c_str(), Vertex.c_str(), runnumber, centralitystring[q-1].c_str()));
-		V1_Odd_Histo[q-1]->Draw("HIST E"); 
+		V1_Odd_Histo[q-1]->Draw("HIST E0"); 
 		V1_Odd_Histo[q-1]->SetMarkerStyle(20);
 		V1_Odd_Histo[q-1]->SetMarkerSize(3);
 		D->SaveAs(Form("/data2/users/ebadams/Eric_HF_RXN_Data_Sets/%d/PNG/%s/%s/%d_HF_V1_Odd_Histo_10-60_%s.png", runnumber, Systematics.c_str(), Vertex.c_str(),runnumber, centralitystring[q-1].c_str()));
